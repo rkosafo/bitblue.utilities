@@ -1,7 +1,8 @@
-﻿namespace App.Utils
+﻿namespace BitBlue.Utilities
 
 
 open System
+open System.Text.RegularExpressions
 
 [<AutoOpen>]
 module Extensions =
@@ -10,6 +11,22 @@ module Extensions =
     static member orElse ifNull value =
       if String.IsNullOrEmpty value then ifNull
       else value
+
+    static member replace pattern (replacement:string) caseSensitive original =
+      match caseSensitive with
+      | false ->
+        //optimized algorithm at copied from https://www.codeproject.com/Articles/10890/Fastest-C-Case-Insenstive-String-Replace
+        Regex.Replace (original, Regex.Escape pattern, replacement, RegexOptions.IgnoreCase ||| RegexOptions.Multiline)
+      | true -> original.Replace (pattern, replacement)
+    
+    static member toTitleCase =
+      let regex = new Regex("[A-Z](?=[^A-Z])|(?<=[^A-Z])[A-Z]", RegexOptions.Compiled)
+      fun x ->
+        match x with
+        | "" -> ""
+        | _ ->
+            let x = regex.Replace(x, " $0")
+            sprintf "%c%s" (Char.ToUpper x.[0]) x.[1..]
 
   type Exception with
     member x.innerMost =

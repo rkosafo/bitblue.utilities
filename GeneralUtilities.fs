@@ -1,4 +1,4 @@
-﻿namespace App.Utils
+﻿namespace BitBlue.Utilities
 
 
 open System
